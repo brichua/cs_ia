@@ -1,0 +1,275 @@
+{% extends "base.html" %}
+
+{% block content %}
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+
+  <title>comp sci ia</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+  <script src="script.js"></script>
+
+  <style>
+
+    h4 {
+        text-align: left;
+        color: white;
+    }    
+    .btn {
+      background-color: #54698a;
+      color: white;
+      padding: 14px 20px;
+      margin: 8px 0;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .change {
+      color: #54698a;
+      border-color: #54698a;
+    }
+
+    #play {
+      font-size: 50px;
+      margin-left: 45%;
+    }
+
+    #container {
+      border: 1px solid #fff;
+      border-radius: 20px;
+      width: 500px;
+      margin: 20px auto;
+      padding: 20px;
+      text-align: center;
+      background: #6a8fbc;
+    }
+
+    #timer {
+      color: #fff;
+      font-size: 50px;
+      margin: 10px auto;
+      border: 5px solid white;
+      border-radius: 50%;
+      width: 200px;
+      height: 200px;
+      overflow: hidden;
+      position: relative;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      cursor: default;
+    }
+
+    #time {
+      margin-top: 67px;
+      z-index: 1;
+      position: relative;
+    }
+
+    #filler {
+      background: #fff;
+      opacity: 0.8;
+      height: 0px;
+      width: 200px;
+      position: absolute;
+      bottom: 0;
+    }
+
+    #buttons {
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      padding: 5px;
+      width: 90px;
+      margin: 10px auto;
+      font-size: 14px;
+      height: 50px;
+      border-radius: 50px;
+    }
+
+    .slider {
+      margin-left: 26%;
+      -webkit-appearance: none;
+      width: 50%;
+      height: 15px;
+      border-radius: 5px;
+      background: #6a8fbc;
+      outline: none;
+      -webkit-transition: .2s;
+      transition: opacity .2s;
+    }
+
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      background: #fff;
+      cursor: pointer;
+    }
+
+    .slider::-moz-range-thumb {
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      background: #fff;
+      cursor: pointer;
+    }
+
+    h2 {
+        color: white;
+    }
+  </style>
+
+  <div class="countainer">
+    <script>
+      var pomodoro = {
+        started: false,
+        minutes: 0,
+        seconds: 0,
+        fillerHeight: 0,
+        fillerIncrement: 0,
+        interval: null,
+        minutesDom: null,
+        secondsDom: null,
+        fillerDom: null,
+        init: function () {
+          var self = this;
+          this.minutesDom = document.querySelector('#minutes');
+          this.secondsDom = document.querySelector('#seconds');
+          this.fillerDom = document.querySelector('#filler');
+          this.interval = setInterval(function () {
+            self.intervalCallback.apply(self);
+          }, 1000);
+          document.querySelector('#work').onclick = function () {
+            self.startWork.apply(self);
+          };
+          document.querySelector('#shortBreak').onclick = function () {
+            self.startShortBreak.apply(self);
+          };
+          document.querySelector('#longBreak').onclick = function () {
+            self.startLongBreak.apply(self);
+          };
+          document.querySelector('#stop').onclick = function () {
+            self.stopTimer.apply(self);
+          };
+        },
+        resetVariables: function (mins, secs, started) {
+          this.minutes = mins;
+          this.seconds = secs;
+          this.started = started;
+          this.fillerIncrement = 200 / (this.minutes * 60);
+          this.fillerHeight = 0;
+        },
+        startWork: function () {
+          this.resetVariables(25, 0, true);
+        },
+        startShortBreak: function () {
+          this.resetVariables(5, 0, true);
+        },
+        startLongBreak: function () {
+          this.resetVariables(15, 0, true);
+        },
+        stopTimer: function () {
+          this.resetVariables(25, 0, false);
+          this.updateDom();
+        },
+        toDoubleDigit: function (num) {
+          if (num < 10) {
+            return "0" + parseInt(num, 10);
+          }
+          return num;
+        },
+        updateDom: function () {
+          this.minutesDom.innerHTML = this.toDoubleDigit(this.minutes);
+          this.secondsDom.innerHTML = this.toDoubleDigit(this.seconds);
+          this.fillerHeight = this.fillerHeight + this.fillerIncrement;
+          this.fillerDom.style.height = this.fillerHeight + 'px';
+        },
+        intervalCallback: function () {
+          if (!this.started) return false;
+          if (this.seconds == 0) {
+            if (this.minutes == 0) {
+              this.timerComplete();
+              return;
+            }
+            this.seconds = 59;
+            this.minutes--;
+          } else {
+            this.seconds--;
+          }
+          this.updateDom();
+        },
+        timerComplete: function () {
+          this.started = false;
+          this.fillerHeight = 0;
+        }
+      };
+      window.onload = function () {
+        pomodoro.init();
+      };
+
+    </script>
+    <div class="row">
+      <h1 class="title">Welcome, {{name}}!</h1>
+    <iframe width="560" height="315" src=https://www.youtube.com/embed/{{music}} title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    <div class="box">
+        <form action="/changeMusic" method="POST">
+        <div class="field">
+                    <input class="input is-large" type="music" name="music" placeholder="Music Embed" autofocus="">
+                </div>
+                <h6>copy and paste the last part of a youtube url above</h6>
+                <button class="btn btn-outline-light">Change Music</button>
+    </form>
+    </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <div id="pomodoro-app">
+          <div id="container">
+            <div id="timer">
+              <div id="time">
+                <span id="minutes">25</span>
+                <span id="colon">:</span>
+                <span id="seconds">00</span>
+              </div>
+              <div id="filler"></div>
+            </div>
+
+            <div id="buttonsPomodoro">
+              <button id="work" class="btn btn-outline-light">Work</button>
+              <button id="shortBreak" class="btn btn-outline-light">Short Break</button>
+              <button id="longBreak" class="btn btn-outline-light">Long Break</button>
+              <button id="stop" class="btn btn-outline-light">Stop</button>
+            </div>
+          </div>
+        </div>
+    </div>
+        <div id="container">
+            <h4 class="toDo">1. {{toDo1}}</h4>
+            <h4 class="toDo">2. {{toDo2}}</h4>
+            <h4 class="toDo">3. {{toDo3}}</h4>
+            <h4 class="toDo">4. {{toDo4}}</h4>
+            <h4 class="toDo">5. {{toDo5}}</h4>
+            <h4><br></h4>
+                <div class="col">
+                    <a class="btn btn-outline-light" href="/change">Change Tasks</a>
+                </div>
+            </div>
+            </div>
+        </div>
+</body>
+
+</html>
+
+{% endblock %}
